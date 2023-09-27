@@ -94,10 +94,12 @@ public class Scanner {
                         lexema += c;
                     }
                     else if(c == '.'){
-
+                        estado = 16;
+                        lexema += c;
                     }
                     else if(c == 'E'){
-
+                        estado = 18;
+                        lexema += c;
                     }
                     else{
                         Token t = new Token(TipoToken.NUMBER, lexema, Integer.valueOf(lexema));
@@ -106,6 +108,60 @@ public class Scanner {
                         estado = 0;
                         lexema = "";
                         i--;
+                    }
+                    break;
+
+                    case 16:
+                    if(Character.isDigit(c)){
+                        estado = 17;
+                        lexema += c;
+                    }
+
+                    break;
+
+                    case 17:
+                    if(Character.isDigit(c)){
+                        estado = 17;
+                        lexema += c;
+                    }
+                    else if(c == 'E'){
+                        estado = 18;
+                        lexema += c;
+                    }
+                        else{
+                        Token t = new Token(TipoToken.NUMBER, lexema, Integer.valueOf(lexema));
+                        tokens.add(t);
+
+                        estado = 0;
+                        lexema = "";
+                        i--;
+                    }
+
+                    break;
+
+                    case 18:
+                    if(c == '+'|| c == '-'){
+                        estado = 19;
+                        lexema += c;
+                    }
+                    else if(Character.isDigit(c)){
+                        estado = 20;
+                        lexema += c;
+                    }
+
+                    break;
+
+                    case 19:
+                    if(Character.isDigit(c)){
+                        estado = 20;
+                        lexema += c;
+                    }
+                    break;
+
+                    case 20:
+                    if(Character.isDigit(c)){
+                        estado = 20;
+                        lexema += c;
                     }
                     break;
             }
