@@ -63,6 +63,10 @@ public class Scanner {
                         */
 
                     }
+                    else if(c == '"'){
+                        estado = 24;
+                        lexema += c; 
+                    }
                     break;
 
                 case 13:
