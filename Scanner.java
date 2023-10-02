@@ -140,7 +140,7 @@ public class Scanner {
 
                     break;
 
-                    case 18:
+                case 18:
                     if(c == '+'|| c == '-'){
                         estado = 19;
                         lexema += c;
@@ -152,14 +152,14 @@ public class Scanner {
 
                     break;
 
-                    case 19:
+                case 19:
                     if(Character.isDigit(c)){
                         estado = 20;
                         lexema += c;
                     }
                     break;
 
-                    case 20:
+                case 20:
                     if(Character.isDigit(c)){
                         estado = 20;
                         lexema += c;
