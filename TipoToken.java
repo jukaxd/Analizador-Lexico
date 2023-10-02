@@ -10,7 +10,7 @@ public enum TipoToken {
     LESS, LESS_EQUAL,
 
     // Literales
-    IDENTIFIER, STRING, NUMBER,
+    IDENTIFIER, STRING, NUMBER, DOUBLE,
 
     // Palabras clave
     AND, ELSE, FALSE, FUN, FOR, IF, NULL, OR,
