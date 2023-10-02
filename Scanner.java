@@ -172,7 +172,7 @@ public class Scanner {
                         TipoToken tt = palabrasReservadas.get(lexema);
 
                         if(tt == null){
-                            Token t = new Token(TipoToken.IDENTIFIER, lexema);
+                            Token t = new Token(TipoToken.DOUBLE, lexema);
                             tokens.add(t);
                         }
                         else{
@@ -186,6 +186,21 @@ public class Scanner {
 
                     }
                     break;
+                case 24: 
+                    if(Character.isLetterOrDigit(c) || Character.isWhitespace(c) || Character.isSpaceChar(c) || Character.isISOControl(c)){
+                        estado = 24;
+                        lexema += c;
+                    }
+                    else if(c == '\n'){
+                        System.out.printl("Error");                
+                    }else if(c == '"'){
+                        
+                    }
+                    /*while( c != '"' ){
+                        estado = 24;
+                        lexema 
+                    }
+                    break;*/ 
             }
 
 
