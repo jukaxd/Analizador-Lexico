@@ -194,19 +194,13 @@ public class Scanner {
                     else if(c == '\n'){
                         System.out.printl("Error");                
                     }else if(c == '"'){
-                        
+                        estado = 0;
+                        lexema += c;
+                    }else {
+                        lexema += c;
                     }
-                    /*while( c != '"' ){
-                        estado = 24;
-                        lexema 
-                    }
-                    break;*/ 
             }
-
-
         }
-//yo 
-        //yo no
 
         return tokens;
     }
