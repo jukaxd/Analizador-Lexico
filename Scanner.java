@@ -67,7 +67,65 @@ public class Scanner {
                         estado = 24;
                         lexema += c; 
                     }
+                    else if(c == '>'){
+                        estado = 1;
+                        lexema += c; 
+                    }
+                    else if(c == '<'){
+                        estado = 4;
+                        lexema += c; 
+                    }
+                    else if(c == '='){
+                        estado = 7;
+                        lexema += c; 
+                    }
+                    else if(c == '!'){
+                        estado = 10;
+                        lexema += c; 
+                    }
                     break;
+
+                case 1:
+                    if(c == '='){
+                        TipoToken tt = palabrasReservadas.get(lexema);
+
+                        if(tt == null){
+                            Token t = new Token(TipoToken.GREATER_EQUAL, lexema);
+                            tokens.add(t);
+                        }
+                        else{
+                            Token t = new Token(tt, lexema);
+                            tokens.add(t);
+                        }
+
+                        estado = 0;
+                        lexema = "";
+                        i--;
+                    }
+                    break;
+                case 4:
+                    if(c == '='){
+                        TipoToken tt = palabrasReservadas.get(lexema);
+
+                        if(tt == null){
+                            Token t = new Token(TipoToken.GREATER_EQUAL, lexema);
+                            tokens.add(t);
+                        }
+                        else{
+                            Token t = new Token(tt, lexema);
+                            tokens.add(t);
+                        }
+
+                        estado = 0;
+                        lexema = "";
+                        i--;
+                    }
+                    break;
+                case 7:
+                    break;
+                case 10:
+                    break;
+
 
                 case 13:
                     if(Character.isLetterOrDigit(c)){
