@@ -298,7 +298,7 @@ public class Scanner {
                         TipoToken tt = palabrasReservadas.get(lexema);
 
                         if(tt == null){
-                            Token t = new Token(TipoToken.GREATER_EQUAL, lexema);
+                            Token t = new Token(TipoToken.SLASH, lexema);
                             tokens.add(t);
                         }
 
@@ -328,6 +328,17 @@ public class Scanner {
                         estado = 27; 
                         lexema += c; 
                     }
+                    break;
+                case 30:
+                    if(Character.isLetterOrDigit(c) || Character.isWhitespace(c) || Character.isSpaceChar(c) || Character.isISOControl(c)){
+                        estado = 30;
+                        lexema += c;
+                    }else if(c == '\n'){
+                        estado = 0;
+                        lexema = "";
+                        i--;
+                    }
+                        
                     break;
                 
             }
