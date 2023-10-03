@@ -294,9 +294,42 @@ public class Scanner {
                     }else if(c == '/'){
                         estado = 30; 
                         lexema += c;
+                    }else{
+                        TipoToken tt = palabrasReservadas.get(lexema);
+
+                        if(tt == null){
+                            Token t = new Token(TipoToken.GREATER_EQUAL, lexema);
+                            tokens.add(t);
+                        }
+
+                        estado = 0;
+                        lexema = "";
+                        i--;
                     }
+                    break;
                 case 27: 
-                    if(
+                    if(Character.isLetterOrDigit(c) || Character.isWhitespace(c) || Character.isSpaceChar(c) || Character.isISOControl(c)){
+                       estado = 27; 
+                        lexema += c;
+                    }else if(c == '*'){
+                        estado = 28;
+                        lexema += c;
+                    }
+                    break;
+                case 28:
+                    if(c == '*'){
+                        estado = 28;
+                        lexema += c;
+                    }else if(c == '/'){
+                        estado = 0;
+                        lexema = "";
+                        i--;
+                    }else{
+                        estado = 27; 
+                        lexema += c; 
+                    }
+                    break;
+                
             }
         }
 
