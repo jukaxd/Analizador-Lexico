@@ -62,25 +62,23 @@ public class Scanner {
                         tokens.add(t);
                         */
 
-                    }
-                    else if(c == '"'){
+                    }else if(c == '"'){
                         estado = 24;
                         lexema += c; 
-                    }
-                    else if(c == '>'){
+                    }else if(c == '>'){
                         estado = 1;
                         lexema += c; 
-                    }
-                    else if(c == '<'){
+                    }else if(c == '<'){
                         estado = 4;
                         lexema += c; 
-                    }
-                    else if(c == '='){
+                    }else if(c == '='){
                         estado = 7;
                         lexema += c; 
-                    }
-                    else if(c == '!'){
+                    }else if(c == '!'){
                         estado = 10;
+                        lexema += c; 
+                    }else if(c == '/'){
+                        estado = 26;
                         lexema += c; 
                     }
                     break;
@@ -288,6 +286,17 @@ public class Scanner {
                     }else {
                         lexema += c;
                     }
+                    break;
+                case 26:
+                    if(c == '*'){
+                        estado = 27; 
+                        lexema += c; 
+                    }else if(c == '/'){
+                        estado = 30; 
+                        lexema += c;
+                    }
+                case 27: 
+                    if(
             }
         }
 
