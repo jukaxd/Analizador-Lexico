@@ -282,10 +282,10 @@ public class Scanner {
                         lexema += c;
                     }else if(c == '"'){
                         lexema += c;
-                        Token t = new Token(TipoToken.STRING, lexema, String.valueOf(lexema));
+                        Token t = new Token(TipoToken.STRING, lexema, lexema.replace('\"', ' ').trim());
                         tokens.add(t);
                         estado = 0;
-                        lexema = "";          
+                        lexema = "";
                     }else{
                         System.out.println("Error");
                     }
