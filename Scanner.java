@@ -76,6 +76,7 @@ public class Scanner {
                         lexema += c; 
                     }else if(c == '"'){
                         estado = 24;
+                        lexema += c;
                     }else if(c == '/'){
                         estado = 26;
                         lexema += c; 
@@ -277,19 +278,18 @@ public class Scanner {
                     break;
                 case 24: 
                     if(Character.isJavaIdentifierPart(c)){
-                        estado = 24;
+                        estado = 24;   
                         lexema += c;
                     }else if(c == '"'){
-                        Token t = new Token(TipoToken.STRING, lexema);
+                        lexema += c;
+                        Token t = new Token(TipoToken.STRING, lexema, String.valueOf(lexema));
                         tokens.add(t);
                         estado = 0;
-                        lexema = "";               
-                    }else if(c == '\n'){
+                        lexema = "";          
+                    }else{
                         System.out.println("Error");
                     }
-                    else{
-                        lexema += c; 
-                    }
+                    
                     break;
                 case 26:
                     if(c == '*'){
@@ -304,6 +304,7 @@ public class Scanner {
                             estado = 0;
                             lexema = "";
                             i--;
+                            //  /* ghgjjgj**** */
                     }
                     break;
                 case 27: 
@@ -322,9 +323,11 @@ public class Scanner {
                     }else if(c == '/'){
                         estado = 0;
                         lexema = "";
-                    }else{
+                    }else if(Character.isJavaIdentifierPart(c)){
                         estado = 27; 
                         lexema += c; 
+                    }else{
+                        System.out.println("Error");
                     }
                     break;
                 case 30:
