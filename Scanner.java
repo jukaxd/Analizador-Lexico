@@ -280,11 +280,14 @@ public class Scanner {
                     if(Character.isJavaIdentifierPart(c)){
                         estado = 24;   
                         lexema += c;
-                    }else if(c == '"'){
+                    }else if (c == ' ') {
                         lexema += c;
+                    }else if(c == '"' ){
+                        lexema += c;
+                        estado = 0;
+                        //String valorToken = lexema.substring(1, lexema.length() - 1); // Elimina las comillas al principio y al final
                         Token t = new Token(TipoToken.STRING, lexema, lexema.replace('\"', ' ').trim());
                         tokens.add(t);
-                        estado = 0;
                         lexema = "";
                     }else{
                         System.out.println("Error");
@@ -304,7 +307,7 @@ public class Scanner {
                             estado = 0;
                             lexema = "";
                             i--;
-                            //  /* ghgjjgj**** */
+                            
                     }
                     break;
                 case 27: 
