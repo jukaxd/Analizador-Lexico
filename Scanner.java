@@ -280,8 +280,6 @@ public class Scanner {
                     if(Character.isJavaIdentifierPart(c)){
                         estado = 24;   
                         lexema += c;
-                    }else if (c == ' ') {
-                        lexema += c;
                     }else if(c == '"' ){
                         lexema += c;
                         estado = 0;
@@ -290,9 +288,8 @@ public class Scanner {
                         tokens.add(t);
                         lexema = "";
                     }else{
-                        System.out.println("Error");
+                        lexema += c;
                     }
-                    
                     break;
                 case 26:
                     if(c == '*'){
@@ -306,8 +303,7 @@ public class Scanner {
                             tokens.add(t);
                             estado = 0;
                             lexema = "";
-                            i--;
-                            
+                            i--;        
                     }
                     break;
                 case 27: 
@@ -326,11 +322,9 @@ public class Scanner {
                     }else if(c == '/'){
                         estado = 0;
                         lexema = "";
-                    }else if(Character.isJavaIdentifierPart(c)){
+                    }else{
                         estado = 27; 
                         lexema += c; 
-                    }else{
-                        System.out.println("Error");
                     }
                     break;
                 case 30:
@@ -346,7 +340,9 @@ public class Scanner {
                 
             }
         }
-
+        if(estado == 24 || estado == 27){
+            System.out.println("Error");
+        }
         return tokens;
     }
 }
