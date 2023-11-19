@@ -13,7 +13,8 @@ public class ASDR {
         preanalisis = this.tokens.get(index);
     }
 
-    public void parse() {
+    @Override
+    public boolean parse() {
         PROGRAM();
 
         if (preanalisis.tipo == TipoToken.EOF && !hasErrors) {
@@ -21,39 +22,42 @@ public class ASDR {
         } else {
             System.out.println("Se encontraron errores sintácticos.");
         }
+        return false;
     }
 
     //PROGRAM -> DECLARATION
     private void PROGRAM() {
+        if(hasErrors)
+        return; 
         DECLARATION();
     }
     //DECLARATION -> FUN_DECL DECLARATION | VAR_DECL DECLARATION | STATEMENT DECLARATION | Ɛ
     private void DECLARATION() {
-        if (preanalisis.tipo == TipoToken.FUN
-                || preanalisis.tipo == TipoToken.VAR
-                || preanalisis.tipo == TipoToken.BANG
-                || preanalisis.tipo == TipoToken.MINUS
-                || preanalisis.tipo == TipoToken.TRUE
-                || preanalisis.tipo == TipoToken.FALSE
-                || preanalisis.tipo == TipoToken.NULL
-                || preanalisis.tipo == TipoToken.NUMBER
-                || preanalisis.tipo == TipoToken.STRING
-                || preanalisis.tipo == TipoToken.IDENTIFIER
-                || preanalisis.tipo == TipoToken.LEFT_PAREN
-                || preanalisis.tipo == TipoToken.FOR
-                || preanalisis.tipo == TipoToken.IF
-                || preanalisis.tipo == TipoToken.PRINT
-                || preanalisis.tipo == TipoToken.RETURN
-                || preanalisis.tipo == TipoToken.WHILE
-                || preanalisis.tipo == TipoToken.LEFT_BRACE) {
-
-            // Llama a las funciones correspondientes para implementar las producciones
-            // FUN_DECL, VAR_DECL, STATEMENT, o Ɛ (epsilon)
+        if(hasErrors)
+        return; 
+        if (preanalisis.tipo == TipoToken.FUN) {
             FUN_DECL();
+            DECLARATION();
+        }else if(preanalisis.tipo == TipoToken.VAR){
             VAR_DECL();
-            STATEMENT();
-        } else {
-            // Epsilon caso
+            DECLARATION();
+        }else if(preanalisis.tipo == TipoToken.BANG ||
+        preanalisis.tipo == TipoToken.MINUS ||
+        preanalisis.tipo == TipoToken.TRUE ||
+        preanalisis.tipo == TipoToken.FALSE ||
+        preanalisis.tipo == TipoToken.NULL ||
+        preanalisis.tipo == TipoToken.NUMBER ||
+        preanalisis.tipo == TipoToken.STRING ||
+        preanalisis.tipo == TipoToken.IDENTIFIER ||
+        preanalisis.tipo == TipoToken.LEFT_PAREN ||
+        preanalisis.tipo == TipoToken.FOR ||
+        preanalisis.tipo == TipoToken.IF ||
+        preanalisis.tipo == TipoToken.PRINT ||
+        preanalisis.tipo == TipoToken.RETURN ||
+        preanalisis.tipo == TipoToken.WHILE ||
+        preanalisis.tipo == TipoToken.LEFT_BRACE){
+           STATEMENT();
+           DECLARATION(); 
         }
     }
     //FUN_DECL -> fun FUNCTION
@@ -62,6 +66,8 @@ public class ASDR {
         if (preanalisis.tipo == TipoToken.FUN) {
             match(TipoToken.FUN);
             FUNCTION();
+        }else{
+            hasErrors = true;
         }
     }
     //VAR_DECL -> var id VAR_INIT ;
@@ -73,12 +79,13 @@ public class ASDR {
             VAR_INIT();
             match(TipoToken.SEMICOLON);
         } else {
-            error(TipoToken.VAR);
+            hasErrors=true;
         }
     }
     //VAR_INIT -> = EXPRESSION | Ɛ
     private void VAR_INIT() {
-        
+        if(hasErrors)
+        return;
         if (preanalisis.tipo == TipoToken.EQUAL) {
             match(TipoToken.EQUAL);
             EXPRESSION();
@@ -97,29 +104,25 @@ public class ASDR {
             preanalisis.tipo == TipoToken.LEFT_PAREN) {
             EXPR_STMT();
         } else if (preanalisis.tipo == TipoToken.FOR) {
-            match(TipoToken.FOR);
             FOR_STMT();  // Procesa un bucle for
         } else if (preanalisis.tipo == TipoToken.IF) {
-            match(TipoToken.IF);
             IF_STMT();  // Procesa una instrucción if
         } else if (preanalisis.tipo == TipoToken.PRINT) {
-            match(TipoToken.PRINT);
             PRINT_STMT();  // Procesa una instrucción print
         } else if (preanalisis.tipo == TipoToken.RETURN) {
-            match(TipoToken.RETURN);
             RETURN_STMT();  // Procesa una instrucción return
         } else if (preanalisis.tipo == TipoToken.WHILE) {
-            match(TipoToken.WHILE);
             WHILE_STMT();  // Procesa un bucle while
         } else if (preanalisis.tipo == TipoToken.LEFT_BRACE) {
-            match(TipoToken.LEFT_BRACE);
             BLOCK();  // Procesa un bloque de código
-        } else {
-            error(TipoToken.BANG, TipoToken.MINUS, TipoToken.TRUE, TipoToken.FALSE, TipoToken.NULL, TipoToken.NUMBER, TipoToken.STRING, TipoToken.IDENTIFIER, TipoToken.LEFT_PAREN, TipoToken.FOR, TipoToken.IF, TipoToken.PRINT, TipoToken.RETURN, TipoToken.WHILE, TipoToken.LEFT_BRACE);
+        }else{
+            hasErrors=true;
         }
     }
     //EXPR_STMT -> EXPRESSION ;
     private void EXPR_STMT() {
+        if(hasErrors)
+        return;
         // Conjunto primero de EXPR_STMT: {!, -, true, false, null, number, string, id, (}
         if (preanalisis.tipo == TipoToken.BANG ||
             preanalisis.tipo == TipoToken.MINUS ||
@@ -134,22 +137,29 @@ public class ASDR {
             EXPRESSION();
             match(TipoToken.SEMICOLON);  // Espera el punto y coma al final
         } else {
-            error(TipoToken.BANG, TipoToken.MINUS, TipoToken.TRUE, TipoToken.FALSE, TipoToken.NULL, TipoToken.NUMBER, TipoToken.STRING, TipoToken.IDENTIFIER, TipoToken.LEFT_PAREN);
+            hasErrors=true;
         }
     }
     //FOR_STMT -> for ( FOR_STMT_1 FOR_STMT_2 FOR_STMT_3 ) STATEMENT
     private void FOR_STMT() {
+        if(hasErrors)
+        return;
         if(preanalisis.tipo == TipoToken.FOR){
             match(TipoToken.FOR);
             match(TipoToken.LEFT_PAREN);
             FOR_STMT_1();
             FOR_STMT_2();
             FOR_STMT_3();
-            match(TipoToken.RIGHT_PAREN);       
+            match(TipoToken.RIGHT_PAREN);  
+            STATEMENT();     
+        }else{
+            hasErrors=true;
         }
     }
     //FOR_STMT_1 -> VAR_DECL | EXPR_STMT | ;
     private void FOR_STMT_1() {
+        if(hasErrors)
+        return;
         if(preanalisis.tipo == TipoToken.VAR){
             VAR_DECL();    
         }else if(preanalisis.tipo == TipoToken.BANG ||
@@ -160,15 +170,20 @@ public class ASDR {
             preanalisis.tipo == TipoToken.NUMBER ||
             preanalisis.tipo == TipoToken.STRING ||
             preanalisis.tipo == TipoToken.IDENTIFIER ||
-            preanalisis.tipo == TipoToken.LEFT_PAREN ||
-            preanalisis.tipo == TipoToken.SEMICOLON){
+            preanalisis.tipo == TipoToken.LEFT_PAREN
+            ){
         
             EXPR_STMT();
+        }else if(preanalisis.tipo == TipoToken.SEMICOLON){
             match(TipoToken.SEMICOLON);
+        }else{
+            hasErrors=true;
         }
     }
     //FOR_STMT_2 -> EXPRESSION; | ;
     private void FOR_STMT_2() {
+        if(hasErrors)
+        return;
         if (preanalisis.tipo == TipoToken.BANG ||
             preanalisis.tipo == TipoToken.MINUS ||
             preanalisis.tipo == TipoToken.TRUE ||
@@ -177,14 +192,20 @@ public class ASDR {
             preanalisis.tipo == TipoToken.NUMBER ||
             preanalisis.tipo == TipoToken.STRING ||
             preanalisis.tipo == TipoToken.IDENTIFIER ||
-            preanalisis.tipo == TipoToken.LEFT_PAREN ||
-            preanalisis.tipo == TipoToken.SEMICOLON) {
+            preanalisis.tipo == TipoToken.LEFT_PAREN
+            ) {
             EXPRESSION();
-            match(TipoToken.SEMICOLON);  // Espera el punto y coma al final
-        } 
+            match(TipoToken.SEMICOLON);
+        } else if(preanalisis.tipo == TipoToken.SEMICOLON){
+            match(TipoToken.SEMICOLON);
+        }else{
+            hasErrors=true;
+        }
     }
     //FOR_STMT_3 -> EXPRESSION | Ɛ
     private void FOR_STMT_3() {
+        if(hasErrors)
+        return; 
         if (preanalisis.tipo == TipoToken.BANG ||
             preanalisis.tipo == TipoToken.MINUS ||
             preanalisis.tipo == TipoToken.TRUE ||
@@ -201,6 +222,8 @@ public class ASDR {
     }
     //IF_STMT -> if (EXPRESSION) STATEMENT ELSE_STATEMENT
     private void IF_STMT() {
+        if(hasErrors)
+        return;
         if(preanalisis.tipo == TipoToken.IF){
             match(TipoToken.IF);
             match(TipoToken.LEFT_PAREN);
@@ -209,11 +232,13 @@ public class ASDR {
             STATEMENT();
             ELSE_STMT();
         }else {
-            error(TipoToken.IF);
+            hasErrors=true;
         }
     }
     //ELSE_STATEMENT -> else STATEMENT | Ɛ
     private void ELSE_STMT() {
+        if(hasErrors)
+        return;
         if(preanalisis.tipo == TipoToken.ELSE){
             match(TipoToken.ELSE);
             STATEMENT();
@@ -221,22 +246,32 @@ public class ASDR {
     }
     //PRINT_STMT -> print EXPRESSION ;
     private void PRINT_STMT() {
+        if(hasErrors)
+        return;
         if(preanalisis.tipo == TipoToken.PRINT){
             match(TipoToken.PRINT);
             EXPRESSION();
             match(TipoToken.SEMICOLON);
+        }else{
+            hasErrors=true;
         }
     }
     //RETURN_STMT -> return RETURN_EXP_OPC ;
     private void RETURN_STMT() {
+        if(hasErrors)
+        return;
         if(preanalisis.tipo == TipoToken.RETURN){
             match(TipoToken.RETURN);
             RETURN_EXP_OPC();
             match(TipoToken.SEMICOLON);
+        }else{
+            hasErrors=true;
         }
     }
     //RETURN_EXP_OPC -> EXPRESSION | Ɛ
     private void RETURN_EXP_OPC() {
+        if(hasErrors)
+        return;
         if(preanalisis.tipo == TipoToken.BANG ||
             preanalisis.tipo == TipoToken.MINUS ||
             preanalisis.tipo == TipoToken.TRUE ||
@@ -253,34 +288,34 @@ public class ASDR {
     }
     //WHILE_STMT -> while ( EXPRESSION ) STATEMENT
     private void WHILE_STMT() {
+        if(hasErrors)
+        return;
         if(preanalisis.tipo == TipoToken.WHILE){
             match(TipoToken.WHILE);
             match(TipoToken.LEFT_PAREN);
             EXPRESSION();
             match(TipoToken.RIGHT_PAREN);
             STATEMENT();
+        }else{
+            hasErrors=true;
         }
     }
     //BLOCK -> { DECLARATION }
     private void BLOCK() {
-        if (hasErrors) {
-            // Avanzar al siguiente token en caso de error
-            while (preanalisis.tipo != TipoToken.RIGHT_BRACE && preanalisis.tipo != TipoToken.EOF) {
-                index++;
-                preanalisis = tokens.get(index);
-            }
-            return;
-        }
+        if (hasErrors)
+        return; 
         if (preanalisis.tipo == TipoToken.LEFT_BRACE) {
             match(TipoToken.LEFT_BRACE);
             DECLARATION();
             match(TipoToken.RIGHT_BRACE);
         } else {
-            error(TipoToken.LEFT_BRACE);
+            hasErrors=true;
         }
     }
     //EXPRESSION -> ASSIGNMENT
     private void EXPRESSION() {
+        if(hasErrors)
+        return;
         if(preanalisis.tipo == TipoToken.BANG ||
             preanalisis.tipo == TipoToken.MINUS ||
             preanalisis.tipo == TipoToken.TRUE ||
@@ -296,6 +331,8 @@ public class ASDR {
     }
     //ASSIGNMENT -> LOGIC_OR ASSIGNMENT_OPC
     private void ASSIGNMENT() {
+        if(hasErrors)
+        return;
         if(preanalisis.tipo == TipoToken.BANG ||
             preanalisis.tipo == TipoToken.MINUS ||
             preanalisis.tipo == TipoToken.TRUE ||
@@ -305,12 +342,16 @@ public class ASDR {
             preanalisis.tipo == TipoToken.STRING ||
             preanalisis.tipo == TipoToken.IDENTIFIER ||
             preanalisis.tipo == TipoToken.LEFT_PAREN){
-                LOGIC_OR();
-                ASSIGNMENT_OPC();
-            }
+            LOGIC_OR();
+            ASSIGNMENT_OPC();
+        }else{
+            hasErrors=true;
+        }
     }
     // ASSIGNMENT_OPC -> = EXPRESSION | Ɛ
     private void ASSIGNMENT_OPC() {
+        if(hasErrors)
+        return;
         if(preanalisis.tipo == TipoToken.EQUAL){
             match(TipoToken.EQUAL);
             EXPRESSION();
@@ -318,6 +359,8 @@ public class ASDR {
     }
     //LOGIC_OR -> LOGIC_AND LOGIC_OR_2
     private void LOGIC_OR() {
+        if(hasErrors)
+        return;
         if(preanalisis.tipo == TipoToken.BANG ||
             preanalisis.tipo == TipoToken.MINUS ||
             preanalisis.tipo == TipoToken.TRUE ||
@@ -329,10 +372,14 @@ public class ASDR {
             preanalisis.tipo == TipoToken.LEFT_PAREN){
                 LOGIC_AND();
                 LOGIC_OR_2();
+            }else{
+                hasErrors=true;
             }
     }
     //LOGIC_OR_2 -> or LOGIC_AND LOGIC_OR_2 | Ɛ
     private void LOGIC_OR_2() {
+        if(hasErrors)
+        return;
         if(preanalisis.tipo == TipoToken.OR){
             match(TipoToken.OR);
             LOGIC_AND();
@@ -341,6 +388,8 @@ public class ASDR {
     }
     //LOGIC_AND -> EQUALITY LOGIC_AND_2
     private void LOGIC_AND() {
+        if(hasErrors)
+        return;
         if(preanalisis.tipo == TipoToken.BANG ||
             preanalisis.tipo == TipoToken.MINUS ||
             preanalisis.tipo == TipoToken.TRUE ||
@@ -353,10 +402,14 @@ public class ASDR {
             
             EQUALITY();
             LOGIC_AND_2();
+        }else{
+            hasErrors=true;
         }
     }
     //LOGIC_AND_2 -> and EQUALITY LOGIC_AND_2 | Ɛ
     private void LOGIC_AND_2() {
+        if(hasErrors)
+        return;
         if(preanalisis.tipo == TipoToken.AND){
             match(TipoToken.AND);
             EQUALITY();
@@ -365,6 +418,8 @@ public class ASDR {
     }
     //EQUALITY -> COMPARISON EQUALITY_2
     private void EQUALITY() {
+        if(hasErrors)
+        return;
         if(preanalisis.tipo == TipoToken.BANG ||
             preanalisis.tipo == TipoToken.MINUS ||
             preanalisis.tipo == TipoToken.TRUE ||
@@ -377,25 +432,29 @@ public class ASDR {
             
             COMPARISON();
             EQUALITY_2();
+        }else{
+            hasErrors=true;
         }
     }
     //EQUALITY_2 -> != COMPARISON EQUALITY_2 | == COMPARISON EQUALITY_2 | Ɛ
     private void EQUALITY_2() {
+        if(hasErrors)
+        return;
         if(preanalisis.tipo == TipoToken.BANG_EQUAL){
             match(TipoToken.BANG_EQUAL);
             COMPARISON();
             EQUALITY_2();
-        }else{
-            if(preanalisis.tipo == TipoToken.EQUAL_EQUAL){
-                match(TipoToken.EQUAL_EQUAL);
-                COMPARISON();
-                EQUALITY_2();
-            }
+        }else if(preanalisis.tipo == TipoToken.EQUAL_EQUAL){
+            match(TipoToken.EQUAL_EQUAL);
+            COMPARISON();
+            EQUALITY_2();
         }
-        
     }
+        
     //COMPARISON -> TERM COMPARISON_2
     private void COMPARISON() {
+        if(hasErrors)
+        return;
         if(preanalisis.tipo == TipoToken.BANG ||
             preanalisis.tipo == TipoToken.MINUS ||
             preanalisis.tipo == TipoToken.TRUE ||
@@ -408,10 +467,14 @@ public class ASDR {
             
             TERM();
             COMPARISON_2();
+        }else{
+            hasErrors=true;
         }
     }
     //COMPARISON_2 -> > TERM COMPARISON_2 | >= TERM COMPARISON_2 | < TERM COMPARISON_2 | <= TERM COMPARISON_2 | Ɛ
     private void COMPARISON_2() {
+        if(hasErrors)
+        return;
         if(preanalisis.tipo == TipoToken.GREATER){
             match(TipoToken.GREATER);
             TERM();
@@ -434,6 +497,8 @@ public class ASDR {
     }
     //TERM -> FACTOR TERM_2
     private void TERM() {
+        if(hasErrors)
+        return;
         if(preanalisis.tipo == TipoToken.BANG ||
             preanalisis.tipo == TipoToken.MINUS ||
             preanalisis.tipo == TipoToken.TRUE ||
@@ -446,10 +511,14 @@ public class ASDR {
             
             FACTOR();
             TERM_2();
+        }else{
+            hasErrors=true;
         }
     }
     //TERM_2 -> - FACTOR TERM_2 | + FACTOR TERM_2 | Ɛ
     private void TERM_2() {
+        if(hasErrors)
+        return;
         if(preanalisis.tipo == TipoToken.MINUS){
             match(TipoToken.MINUS);
             FACTOR();
@@ -464,6 +533,8 @@ public class ASDR {
     }
     //FACTOR -> UNARY FACTOR_2
     private void FACTOR() {
+        if(hasErrors)
+        return;
         if(preanalisis.tipo == TipoToken.BANG ||
             preanalisis.tipo == TipoToken.MINUS ||
             preanalisis.tipo == TipoToken.TRUE ||
@@ -476,10 +547,14 @@ public class ASDR {
             
             UNARY();
             FACTOR_2();
+        }else{
+            hasErrors=true;
         }
     }
     //FACTOR_2 -> / UNARY FACTOR_2 | * UNARY FACTOR_2 | Ɛ
     private void FACTOR_2() {
+        if(hasErrors)
+        return;
         if(preanalisis.tipo == TipoToken.SLASH){
             match(TipoToken.SLASH);
             UNARY();
@@ -493,18 +568,32 @@ public class ASDR {
     }
     //UNARY -> ! UNARY | - UNARY | CALL
     private void UNARY() {
+        if(hasErrors)
+        return;
         if(preanalisis.tipo == TipoToken.BANG){
             match(TipoToken.BANG);
             UNARY();
         }else if(preanalisis.tipo == TipoToken.MINUS){
             match(TipoToken.MINUS);
             UNARY();
-        }else{
+        }else if(preanalisis.tipo == TipoToken.BANG||
+            preanalisis.tipo == TipoToken.MINUS||
+            preanalisis.tipo == TipoToken.TRUE||
+            preanalisis.tipo == TipoToken.FALSE||
+            preanalisis.tipo == TipoToken.NULL||
+            preanalisis.tipo == TipoToken.NUMBER||
+            preanalisis.tipo == TipoToken.STRING||
+            preanalisis.tipo == TipoToken.IDENTIFIER||
+            preanalisis.tipo == TipoToken.LEFT_PAREN){
             CALL();
+        }else{
+            hasErrors=true;
         }
     }
     //CALL -> PRIMARY CALL_2
     private void CALL() {
+        if(hasErrors)
+        return;
         if(preanalisis.tipo == TipoToken.TRUE ||
             preanalisis.tipo == TipoToken.FALSE ||
             preanalisis.tipo == TipoToken.NULL ||
@@ -515,10 +604,14 @@ public class ASDR {
             
             PRIMARY();
             CALL_2();
+        }else{
+            hasErrors=true;
         }
     }
     //CALL_2 -> ( ARGUMENTS_OPC ) CALL_2 | Ɛ
     private void CALL_2() {
+        if(hasErrors)
+        return;
         if(preanalisis.tipo == TipoToken.LEFT_PAREN){
             match(TipoToken.LEFT_PAREN);
             ARGUMENTS_OPC();
@@ -530,6 +623,8 @@ public class ASDR {
     }
     //PRIMARY -> true | false | null | number | string | id | ( EXPRESSION )
     private void PRIMARY() {
+        if(hasErrors)
+        return;
         if(preanalisis.tipo == TipoToken.TRUE){
             match(TipoToken.TRUE);
         }else if(preanalisis.tipo == TipoToken.FALSE){
@@ -546,10 +641,14 @@ public class ASDR {
             match(TipoToken.LEFT_PAREN);
             EXPRESSION();
             match(TipoToken.RIGHT_PAREN);
+        }else{
+            hasErrors=true;
         }
     }
     //FUNCTION -> id ( PARAMETERS_OPC ) BLOCK
     private void FUNCTION() {
+       if(hasErrors)
+       return;
        if(preanalisis.tipo == TipoToken.IDENTIFIER){
         match(TipoToken.IDENTIFIER);
         match(TipoToken.LEFT_PAREN);
@@ -557,13 +656,14 @@ public class ASDR {
         match(TipoToken.RIGHT_PAREN);
         BLOCK();
        }else{
-            error(TipoToken.IDENTIFIER);
+            hasErrors=true;
         }
     }
     //FUNCTIONS -> FUN_DECL FUNCTIONS | Ɛ
     private void FUNCTIONS() {
+        if(hasErrors)
+        return;
         if(preanalisis.tipo == TipoToken.FUN){
-            match(TipoToken.FUN);
             FUN_DECL();
             FUNCTIONS();
         }else{
@@ -572,13 +672,16 @@ public class ASDR {
     }
     //PARAMETERS_OPC -> PARAMETERS | Ɛ
     private void PARAMETERS_OPC() {
+        if(hasErrors)
+        return;
         if(preanalisis.tipo == TipoToken.IDENTIFIER){
-            match(TipoToken.IDENTIFIER);
             PARAMETERS();
         }
     }
     //PARAMETERS -> id PARAMETERS_2
     private void PARAMETERS() {
+        if(hasErrors)
+        return;
         if(preanalisis.tipo == TipoToken.IDENTIFIER){
             match(TipoToken.IDENTIFIER);
             PARAMETERS_2();
