@@ -111,24 +111,24 @@ public class ASDR implements Parser{
     
             EXPR_STMT();
         } else if (preanalisis.tipo == TipoToken.FOR) {
-            match(TipoToken.FOR);
+           // match(TipoToken.FOR);
             FOR_STMT();  // Procesa un bucle for
         } else if (preanalisis.tipo == TipoToken.IF) {
-            match(TipoToken.IF);
+            //match(TipoToken.IF);
             IF_STMT();  // Procesa una instrucción if
         } else if (preanalisis.tipo == TipoToken.PRINT) {
-            match(TipoToken.PRINT);
+            //match(TipoToken.PRINT);
             PRINT_STMT();  // Procesa una instrucción print
         } else if (preanalisis.tipo == TipoToken.RETURN) {
-            match(TipoToken.RETURN);
+            //match(TipoToken.RETURN);
             RETURN_STMT();  // Procesa una instrucción return
         } else if (preanalisis.tipo == TipoToken.WHILE) {
-            match(TipoToken.WHILE);
+            //match(TipoToken.WHILE);
             WHILE_STMT();  // Procesa un bucle while
         } else if (preanalisis.tipo == TipoToken.LEFT_BRACE) {
-            match(TipoToken.LEFT_BRACE);
+            //match(TipoToken.LEFT_BRACE);
             BLOCK();  // Procesa un bloque de código
-            match(TipoToken.RIGHT_BRACE);
+            //match(TipoToken.RIGHT_BRACE);
         }else{
             hasErrors=true;
         }
@@ -208,18 +208,18 @@ public class ASDR implements Parser{
     private void FOR_STMT_3() {
         if(hasErrors)
         return; 
-        // if (preanalisis.tipo == TipoToken.BANG ||
-        //     preanalisis.tipo == TipoToken.MINUS ||
-        //     preanalisis.tipo == TipoToken.TRUE ||
-        //     preanalisis.tipo == TipoToken.FALSE ||
-        //     preanalisis.tipo == TipoToken.NULL ||
-        //     preanalisis.tipo == TipoToken.NUMBER ||
-        //     preanalisis.tipo == TipoToken.STRING ||
-        //     preanalisis.tipo == TipoToken.IDENTIFIER ||
-        //     preanalisis.tipo == TipoToken.LEFT_PAREN) {
+        if (preanalisis.tipo == TipoToken.BANG ||
+            preanalisis.tipo == TipoToken.MINUS ||
+            preanalisis.tipo == TipoToken.TRUE ||
+            preanalisis.tipo == TipoToken.FALSE ||
+            preanalisis.tipo == TipoToken.NULL ||
+            preanalisis.tipo == TipoToken.NUMBER ||
+            preanalisis.tipo == TipoToken.STRING ||
+            preanalisis.tipo == TipoToken.IDENTIFIER ||
+            preanalisis.tipo == TipoToken.LEFT_PAREN) {
         
             EXPRESSION();
-        //}
+        }
     }
     //IF_STMT -> if (EXPRESSION) STATEMENT ELSE_STATEMENT
     private void IF_STMT() {
@@ -273,18 +273,18 @@ public class ASDR implements Parser{
     private void RETURN_EXP_OPC() {
         if(hasErrors)
         return;
-        // if(preanalisis.tipo == TipoToken.BANG ||
-        //     preanalisis.tipo == TipoToken.MINUS ||
-        //     preanalisis.tipo == TipoToken.TRUE ||
-        //     preanalisis.tipo == TipoToken.FALSE ||
-        //     preanalisis.tipo == TipoToken.NULL ||
-        //     preanalisis.tipo == TipoToken.NUMBER ||
-        //     preanalisis.tipo == TipoToken.STRING ||
-        //     preanalisis.tipo == TipoToken.IDENTIFIER ||
-        //     preanalisis.tipo == TipoToken.LEFT_PAREN){
+        if(preanalisis.tipo == TipoToken.BANG ||
+            preanalisis.tipo == TipoToken.MINUS ||
+            preanalisis.tipo == TipoToken.TRUE ||
+            preanalisis.tipo == TipoToken.FALSE ||
+            preanalisis.tipo == TipoToken.NULL ||
+            preanalisis.tipo == TipoToken.NUMBER ||
+            preanalisis.tipo == TipoToken.STRING ||
+            preanalisis.tipo == TipoToken.IDENTIFIER ||
+            preanalisis.tipo == TipoToken.LEFT_PAREN){
  
             EXPRESSION();
-        //}
+        }
     }
     //WHILE_STMT -> while ( EXPRESSION ) STATEMENT
     private void WHILE_STMT() {
@@ -546,14 +546,18 @@ public class ASDR implements Parser{
     private void FUNCTIONS() {
         if(hasErrors)
         return;
-        FUN_DECL();
-        FUNCTIONS();
+        if(preanalisis.tipo == TipoToken.FUN){
+            FUN_DECL();
+            FUNCTIONS();
+        }
     }
     //PARAMETERS_OPC -> PARAMETERS | Ɛ
     private void PARAMETERS_OPC() {
         if(hasErrors)
         return;
-        PARAMETERS();
+         if(preanalisis.tipo == TipoToken.IDENTIFIER){
+            PARAMETERS();
+        }
     }
     //PARAMETERS -> id PARAMETERS_2
     private void PARAMETERS() {
@@ -579,9 +583,19 @@ public class ASDR implements Parser{
     //ARGUMENTS_OPC -> EXPRESSION ARGUMENTS | Ɛ
     private void ARGUMENTS_OPC() {
         if (hasErrors)
-        return;   
-        EXPRESSION();
-        ARGUMENTS();
+        return; 
+        if(preanalisis.tipo == TipoToken.BANG||
+            preanalisis.tipo == TipoToken.MINUS||
+            preanalisis.tipo == TipoToken.TRUE||
+            preanalisis.tipo == TipoToken.FALSE||
+            preanalisis.tipo == TipoToken.NULL||
+            preanalisis.tipo == TipoToken.NUMBER||
+            preanalisis.tipo == TipoToken.STRING||
+            preanalisis.tipo == TipoToken.IDENTIFIER||
+            preanalisis.tipo == TipoToken.LEFT_PAREN){  
+            EXPRESSION();
+            ARGUMENTS();
+        }
     }
     //ARGUMENTS -> , EXPRESSION ARGUMENTS | Ɛ
     private void ARGUMENTS() {
