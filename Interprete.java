@@ -20,13 +20,16 @@ public class Interprete {
             ejecutarArchivo(args[0]);
         } else{
             ejecutarPrompt();
+            
         }
     }
 
     private static void ejecutarArchivo(String path) throws IOException {
         byte[] bytes = Files.readAllBytes(Paths.get(path));
+        
+        //System.out.println(new String(bytes, Charset.defaultCharset()));
+        
         ejecutar(new String(bytes, Charset.defaultCharset()));
-
         // Se indica que existe un error
         if(existenErrores) System.exit(65);
     }
@@ -43,15 +46,19 @@ public class Interprete {
             existenErrores = false;
         }
     }
-
+    //source es lo que se ingreso
     private static void ejecutar(String source) {
         try{
-            Scanner scanner = new Scanner(source);
+            MiScanner scanner = new MiScanner(source);
             List<Token> tokens = scanner.scan();
-
+            //if(scanner.getError())//si hay errores no imprime
+            //System.out.println("\n");
             for(Token token : tokens){
-                System.out.println(token);
+                System.out.println(token);//hace el toString automaticamente
             }
+            Parser parser = new ASDR(tokens);
+        parser.parse();
+            //System.out.println(tokens);
         }
         catch (Exception ex){
             ex.printStackTrace();
@@ -64,13 +71,16 @@ public class Interprete {
     para reportar los errores:
     Interprete.error(....);
      */
+    
     static void error(int linea, String mensaje){
         reportar(linea, "", mensaje);
+        
     }
 
     private static void reportar(int linea, String posicion, String mensaje){
-        System.err.println(
-                "[linea " + linea + "] Error " + posicion + ": " + mensaje
+        System.out.println(    
+                
+                "[linea  " + linea + " ] Error " + posicion + ": " + mensaje
         );
         existenErrores = true;
     }
