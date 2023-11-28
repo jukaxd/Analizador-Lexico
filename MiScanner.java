@@ -901,7 +901,7 @@ public class MiScanner {
 }
 
 
-// NOSOTROS
+// 3ra op
 
 // import java.util.ArrayList;
 // import java.util.HashMap;
